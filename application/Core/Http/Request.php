@@ -3,15 +3,23 @@
 namespace Core\Http;
 
 /**
- * Class Request
- * @package Core\Http
+ * Request class
  *
- * Super barebones request handler.
+ * A very simple request handler
  */
 class Request
 {
+    /**
+    * Request data
+    * @var
+    */
     public $request;
 
+    /**
+    * Class constructor
+    * 
+    * Loads the request variable
+    */
     public function __construct()
     {
         $this->request = $_REQUEST;
@@ -24,10 +32,8 @@ class Request
      */
     public function get(string $key = '') {
         if($key !== '') {
-            // return formatted value or null if nonexistent.
             return isset($_POST[$key]) ? $this->prepare($_POST[$key]) : null;
         }
-        // return entire request formatted if no key is entered.
         return  $this->prepare($_POST);
     }
 

@@ -5,10 +5,27 @@ namespace Models;
 use Core\DB;
 use Core\Parents\Model;
 
+/**
+* Class Dormatory
+*
+* Model for the dormatories table
+*/
 class Dormitory extends Model
 {
+    /**
+    * Table associated with this Model
+    * @var string
+    */
     protected $table = 'dormitories';
 
+    /**
+    * Gets unit and room information for a givel floor in a given building
+    *
+    * @param int $floor 
+    * @param int $dorm
+    *
+    * @return object
+    */
     public function floor($dorm, $floor = 1){
         $assignments = new RoomAssignment();
         $units = [1,2,3,4];
@@ -22,6 +39,5 @@ class Dormitory extends Model
 
         }
         return (object) $results;
-
-}
+    }
 }

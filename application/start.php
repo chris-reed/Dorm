@@ -1,4 +1,9 @@
 <?php
+/**
+ *  Application/start up file
+ *
+ */
+
 use Core\Router;
 
 require 'config.php';

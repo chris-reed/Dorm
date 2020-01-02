@@ -4,22 +4,28 @@ namespace Core\Http;
 
 /**
  * Class Response
+ *
+ * Takes data from the application and returns it in JSON format
  */
 class Response {
 
     /**
+     * Return headers
      * @var array
      */
     protected $headers = [];
 
     /**
+     * Content to be returned
      * @var
      */
     protected $content;
 
     /**
-     * Just a few for the sake of this project.
-     * @var
+     * Response codes and status text
+     * (Just a few for the sake of this project.)
+     *
+     * @var array
      */
     protected $statuses = [
         200 => 'OK',
@@ -29,7 +35,8 @@ class Response {
         ];
 
     /**
-     * Response constructor.
+     * Response constructor
+     * 
      * Setting the default headers
      */
     public function __construct()
@@ -40,7 +47,7 @@ class Response {
     }
 
     /**
-     *  Set content response.
+     * Set content response
      *
      * @param $content
      */
@@ -49,7 +56,7 @@ class Response {
     }
 
     /**
-     *  Set header.
+     * Set header
      *
      * @param $header
      */
@@ -57,13 +64,18 @@ class Response {
         $this->headers[] = $header;
     }
 
+    /**
+    * Set the response status
+    * @param int $code
+    */
     public function setStatus($code) {
         if (array_key_exists($code,$this->statuses)) {
             $this->setHeader(sprintf('HTTP/1.1 ' . $code . ' %s' , $this->statuses[$code]));
         }
     }
+
     /**
-     *  Render Output
+     *  Renders the output
      */
     public function render() {
         if ($this->content) {

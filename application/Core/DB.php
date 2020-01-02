@@ -3,12 +3,22 @@
 namespace Core;
 /**
  * Class DB
- * application class for PDO
+ * 
+ * Application class for database connection
  */
 class DB
 {
+    /**
+    * Instance of the database connection 
+    * @var \PDO
+    */
     protected $connection;
 
+    /**
+    * Class constructor
+    *
+    * Attemps to instantiate a PDO connection to the database
+    */
     public function __construct()
     {
         $config = (object) DATABASE;
@@ -21,6 +31,7 @@ class DB
     }
 
     /**
+     * Executes a given SQL string
      * @param string $query
      * @return array
      * @throws Exception
@@ -31,6 +42,7 @@ class DB
     }
 
     /**
+     * Retrives all data from a given table
      * @param string $table
      * @return array
      * @throws Exception
@@ -42,8 +54,10 @@ class DB
     }
 
     /**
+     * Retrives items from table given an id
+     *
      * @param string $table
-     * @param $id
+     * @param mixed $id
      * @return array
      * @throws Exception
      */
@@ -57,6 +71,8 @@ class DB
     }
 
     /**
+     * processes given data and executes the query
+     *  
      * @param string $sql
      * @param array|null $attributes
      * @return array
@@ -81,23 +97,25 @@ class DB
 
     /**
      * Inserts new data into table
+     *
      * @param string $table
      * @param array|null $attributes
      */
     public function put(string $table, array $attributes = null)
     {
-        //TODO
+        //TODO code this mythod
     }
 
     /**
-     * updates data into row
+     * Updates data into row
+     *
      * @param string $table
      * @param string $id
      * @param array|null $attributes
      */
     public function update(string $table, string $id, array $attributes = null)
     {
-        //TODO
+        //TODO code this method
     }
 
 }

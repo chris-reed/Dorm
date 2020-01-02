@@ -6,9 +6,18 @@ namespace Controllers;
 use Core\Parents\Controller;
 use Models\RoomAssignment;
 
+/**
+* StudentController Class
+*
+*/
 class StudentController extends Controller
 {
 
+    /**
+    * Gets the student information for a specified room
+    * or sends wording to indicate an assignment can be made
+    *
+    */
     public function getOccupancyInfo() {
         $data = (object) $this->request->get('data');
         $stub = [

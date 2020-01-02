@@ -7,8 +7,16 @@ namespace Controllers;
 use Core\Parents\Controller;
 use Models\Dormitory;
 
+/**
+* RoomAssignmentController Class
+*
+*/
 class RoomAssignmentController extends Controller
 {
+    /**
+    * Gets room occupency and unit gender requirement info for all units on a given floor
+    *
+    */
     public function getFloorInfo() {
         $data = (object) $this->request->get('data');
         $dorm = (object) (new Dormitory())->find($data->dorm);

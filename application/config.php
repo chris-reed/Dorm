@@ -12,14 +12,14 @@ define('MODELS', ROOT . 'Models/');
 
 // Database configuration
 define('DATABASE', [
-    'port'   => '3306',
-    'host'   => 'localhost',
-    'schema'   => 'chris_reed',
-    'user'   => 'creed',
-    'password'   => 'creed',
+    'port' => '3306',
+    'host' => 'localhost',
+    'schema' => 'chris_reed',
+    'user' => 'creed',
+    'password' => 'creed',
     'options' => [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
+        PDO::ATTR_EMULATE_PREPARES => false,
     ],
 ]);
