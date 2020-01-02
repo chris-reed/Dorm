@@ -1,6 +1,6 @@
 # Dorm Room Coding Challenge
 
-This is my attempt at the senior developer assesment challenge for InHosting.
+This is my attempt at the senior developer assesment challenge for [InHosting](https://www.inmotionhosting.com/).
 
 ## Getting Started
 
@@ -21,5 +21,6 @@ Just plain old vanilla PHP 7.2.18
 - FontAwesome
 
 ## Author
-
-* **Chris Reed** - [chirs@chrisreed.info](mailto:chris@chrisreed.info)
+**Chris Reed** - [chirs@chrisreed.info](mailto:chris@chrisreed.info)
+---
+# Project Status
