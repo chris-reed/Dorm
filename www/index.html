@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+
+    <title>Student Housing</title>
+</head>
+<body>
+<div class="container-fluid">
+    <nav class="navbar navbar-dark bg-primary">
+        <span class="navbar-brand mb-0 h1">Student Housing</span>
+    </nav>
+    <div class="content">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="card mt-5">
+                    <div class="card-header text-white bg-secondary">
+                        <h5 class="">Available Dormitories</h5>
+                    </div>
+                    <div class="building_menu list-group-flush">
+                    </div>
+                    <div class="card-footer bg-light">
+                        <button data-toggle="modal" data-target="#add_student_modal"class="btn btn-success btn-block btn-lg"><i class="fas fa-user-plus fa-fw"></i> Add Student </button>
+                    </div>
+                </div>
+            </div>
+            <div class="overview col-md-10">
+                <div class="card mt-5">
+                    <div class="card-header text-white bg-secondary">
+                    <h5 class="building_name float-left">Building Name</h5>
+                        <div class="float-right">
+                                    <div class="btn-group btn-group-sm">
+                                        <span class="btn btn-outline-primary bg-light text-dark disabled">Floor:</span>
+                                        <button type="button" class="floor_select btn btn-primary active">1</button>
+                                        <button type="button" class="floor_select btn btn-primary">2</button>
+                                        <button type="button" class="floor_select btn btn-primary">3</button>
+                                        <button type="button" class="floor_select btn btn-primary">4</button>
+                                    </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="floor_info card-deck">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/template" id="unit">
+    <div id="unit_{{building_id}}_{{unit}}" class="card" style="display: none">
+        <div  class="list-group list-group-flush">
+            <a href='#' data-toggle="modal" data-target="#dorm_room_modal" data-location="{{building_id}}_{{unit}}_1" class="dorm_room list-group-item list-group-item-action room_1">BR-1 <span class="float-right">{{room_1}}</span></a>
+            <a href='#' data-toggle="modal" data-target="#dorm_room_modal" data-location="{{building_id}}_{{unit}}_2" class="dorm_room list-group-item list-group-item-action room_2">BR-2 <span class="float-right">{{room_2}}</span></a>
+            <a href='#' data-toggle="modal" data-target="#dorm_room_modal" data-location="{{building_id}}_{{unit}}_3" class="dorm_room list-group-item list-group-item-action room_3">BR-3 <span class="float-right">{{room_3}}</span></a>
+            <a href='#' data-toggle="modal" data-target="#dorm_room_modal" data-location="{{building_id}}_{{unit}}_4" class="dorm_room list-group-item list-group-item-action room_4">BR-4 <span class="float-right">{{room_4}}</span></a>
+            <a href='#' class="list-group-item bg-info text-white">
+                <div class="row">
+                    <div class="col-md-6 text-center border-right">Common</div>
+                    <div class="col-md-6 text-center">Kitchen</div>
+                </div>
+            </a>
+        </div>
+        <div class="card-footer {{gender_class}}">
+            Unit {{unit}}
+            <span class="float-right">{{gender_icon}}</span>
+        </div>
+    </div>
+</script>
+<script type="text/template" id="menu_item">
+    <a href="#" id="building_{{id}}" class="building_select list-group-item list-group-item-action">{{name}}</a>
+</script>
+<script type="text/template" id="occupant_list_item">
+    <li class="list-group-item">
+        <h4 class="student_name">{{first_name}} {{last_name}} <small class="student_id float-right">{{student_id}}</small>
+        </h4>
+        <div class="phone">{{phone}}</div>
+    </li>
+</script>
+
+<!-- Rooms Modal -->
+<div class="modal fade" id="dorm_room_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="room_header">Room Info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul  class="list-group list-group-flush occupants_list">
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary disabled">Add Student</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add Student Modal -->
+<div class="modal  fade" id="add_student_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Add New Student</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-10">[Student Form here]</div>
+                    <div class="col-md-2">[Room Assignment here]</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">Add Student</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script src="https://kit.fontawesome.com/31365ed110.js" crossorigin="anonymous"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
