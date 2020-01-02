@@ -60,6 +60,12 @@ function swapFloorView(building,floor_number=1) {
         });
     }
 }
+
+function getAvailableRooms(){
+    return getData({
+        route: 'Dormitory@getAvailableRooms',
+    }, getAvailableRoomsCallback)
+}
 /* ******************* event related functions ******************* */
 
 // changes out the floor information
@@ -88,6 +94,15 @@ $('#dorm_room_modal').on('show.bs.modal', function (event) {
     getOccupantInfo(location);
 });
 
+$('#add_student_modal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget);
+    let location = null;
+    if (button.hasClass('from_modal')){
+        location = button.data('location').split(',');
+    }else {
+        getAvailableRooms();
+    }
+});
 /* ******************* callback functions ******************* */
 
 // takes the data from the server, builds and inserts the HTML
@@ -145,6 +160,10 @@ function floorOverviewCallback(data) {
         $(`#unit_${building}_${unit}`).fadeIn();
     }
 }
+function getAvailableRoomsCallback(data) {
+    console.log(data);
+
+}
 
 /* ******************* template related functions ******************* */
 
@@ -176,7 +195,7 @@ function getData(data, callback) {
 // populates the dorm room modal with student info or availability info
 function roomModalData(template, data = null) {
     let icon = setIcons({icon_name: 'user'});
-    data['phone'] = formatPhoneNumber(data['phone']);
+    data['phone'] = formatPhoneNumber(data);
     // if there is space available add a different icon
     if (data['first_name'] === "Available") {
         icon = setIcons({icon_name: 'user-plus'})
@@ -195,10 +214,11 @@ function setIcons(options) {
     return icon;
 }
 // formats phone number for display
-function formatPhoneNumber(phoneNumberString) {
+function formatPhoneNumber(data) {
+    let phoneNumberString = data['phone'];
     // returns the add student button if the space is available.
     if (phoneNumberString.includes('click')) {
-        return '<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#add_student_modal">'
+        return '<button data-location="'+data['location']+'" class="from_modal btn btn-success btn-sm" data-toggle="modal" data-target="#add_student_modal">'
             + setIcons({icon_name: 'user-plus'})
             + phoneNumberString
             + '</button>';

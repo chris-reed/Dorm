@@ -5,15 +5,6 @@
 .female {
     background-color: thistle;
 }
-
-.loader {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-}
-.loader>svg {
-    flex: 0 0 200px;
+.auto_assign {
+    padding:.2rem;
 }
