@@ -4,6 +4,7 @@
 namespace Controllers;
 
 
+use Cassandra\Cluster\Builder;
 use Core\Parents\Controller;
 use Models\Dormitory;
 
@@ -14,7 +15,7 @@ use Models\Dormitory;
 class RoomAssignmentController extends Controller
 {
     /**
-    * Gets room occupency and unit gender requirement info for all units on a given floor
+    * Gets room occupancy and unit gender requirement info for all units on a given floor
     *
     */
     public function getFloorInfo() {

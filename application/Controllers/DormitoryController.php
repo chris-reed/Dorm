@@ -13,4 +13,9 @@ use Core\Parents\Controller;
 class DormitoryController extends Controller
 {
 
+    public function getAll() {
+        $building = $this->model->getAll();
+        $this->response($building);
+    }
+
 }

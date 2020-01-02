@@ -1,156 +1,213 @@
-$(function() {
-    build_menu_items();
+$(function () {
+    // build out the menu first so we can determine our default data.
+    buildMenuItems();
 });
 
-function build_menu_items() {
-    get_data(
-        {
+/* ******************* main functions ******************* */
+
+// requests data from server and builds the building selection menu
+function buildMenuItems() {
+    // AJAX call
+    getData({
             route: 'Dormitory@getAll',
-        }
-        ,menu_item_callback
-    )
+        },
+        buildMenuItemsCallback
+    );
 }
-function get_template(template_id){
- return $(`#${template_id}`).html()
+
+// populates the building overview container
+function floorView(building) {
+    $('.building_name').text(building.name);
+    $(`#building_${building.id}`).first().addClass('active');
+    getFloorInfo(building.id);
 }
-function populate_template(template,data){
-    for(let key in data){
-        let regex = new RegExp('{{'+key+'}}','g');
-        template = template.replace(regex,data[key]);
-    }
-    return template;
-}
-function get_data(data,callback) {
-     return $.ajax({
-        method: "POST",
-        url: "ajax/",
-        data: data,
-    }).done(callback);
-}
-function default_view(first_building) {
-    //loads default info into the building window.
-    $('.building_name').text(first_building.name)
-    $(`#building_${first_building.id}`).first().addClass('active');
-    get_floor_info(first_building.id);
-}
-function get_floor_info(building, floor= 1) {
-    get_data({
+
+// retrieves the occupancy info on the first floor of the default building
+function getFloorInfo(building, floor = 1) {
+    getData({
         route: 'RoomAssignment@getFloorInfo',
         data: {
             dorm: building,
             floor: floor,
         }
-    },floor_overview_callback)
+    }, floorOverviewCallback)
 }
-function get_occupant_info(location) {
-   return get_data({
+
+// retrieves the student info for a given room location
+function getOccupantInfo(location) {
+    return getData({
         route: 'Student@getOccupancyInfo',
         data: {
             location: location,
         }
-    },occupant_callback)
+    }, occupantCallback)
 }
-function occupant_callback(data){
-    let template = get_template('occupant_list_item');
-    $('.occupants_list').children().detach()
-    console.log(data)
-    if(Array.isArray(data)){
-            for(let key in data){
-                modal_data(template,data[key])
-            }
-    }else{
-        modal_data(template,data)
+//replaces the previous floor information with the given building and floor.
+function swapFloorView(building,floor_number=1) {
+    let container = $('.floor_info');
+    let height = container.height();
+    // only get new info if any floor but the current floor is selected
+    if (!$(this).hasClass('active')) {
+        $('.floor_select.active').removeClass('active');
+        $(this).addClass('active');
+        // set the height of the container and fade out. Hide the dirty work
+        container.css('height',`${height}px`).fadeOut(function () {
+            $.when(container.children().detach()).done(function () {
+                // get the info for the new floor
+                getFloorInfo(building, floor_number);
+                container.fadeIn();
+            });
+        });
+    }
+}
+/* ******************* event related functions ******************* */
+
+// changes out the floor information
+$('body').on('click', '.floor_select', function () {
+    let floor_number = $(this).text();
+    let building = $('.building_select.active')
+        .attr('id')
+        .replace('building_', '');
+        swapFloorView(building,floor_number);
+})
+    // building selection menu
+    .on('click','.building_select', function(){
+        $('.building_select').removeClass('active');
+        let building = $(this).attr('id').replace('building_', '');
+        $(this).addClass('active');
+
+        swapFloorView(building,1);
+
+});
+
+// populate the door room modal with student information when it's activated.
+$('#dorm_room_modal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget);
+    // get the location info from the button
+    let location = button.data('location').split('_');
+    getOccupantInfo(location);
+});
+
+/* ******************* callback functions ******************* */
+
+// takes the data from the server, builds and inserts the HTML
+function buildMenuItemsCallback(data) {
+    let template = getTemplate('menu_item');
+    for (let key in data) {
+        let menu_item = populateTemplate(template, data[key]);
+        $('.building_menu').append(menu_item);
+        if (key == 0) {
+            // get the building info for the first building
+            // and start building the floor info
+            floorView(data[key]);
+        }
+    }
+}
+// builds and inserts the student info HTML into the door room modal
+function occupantCallback(data) {
+    let template = getTemplate('occupant_list_item');
+    $('.occupants_list').children().detach();
+    if (Array.isArray(data)) {
+        for (let key in data) {
+            roomModalData(template, data[key])
+        }
+    } else {
+        roomModalData(template, data)
     }
 }
 
-function modal_data(template,data=null){
-    let icon = '<i class="fas fa-user fa-fw"></i> '
+//builds and inserts the floor information into the overview panel
+function floorOverviewCallback(data) {
+    let template = getTemplate('unit');
+    let building = $('.building_select.active').attr('id').replace('building_', '');
+    let attributes = {
+        building_id: building,
+    };
+    //iterate through each unit and build the attributes for insertion into the template
+    for (let unit in data) {
+        attributes['unit'] = unit;
+        attributes['gender_icon'] = setIcons({
+            icon_name: data[unit].gender.toLowerCase() + ' fa-2x',
+            quantity: 1,
+        });
+        attributes['gender_class'] = data[unit].gender.toLowerCase();
+        // iterate through the rooms in each unit to add the occupancy icons.
+        for (let room in data[unit]) {
+            if (room !== 'gender') {
+                attributes[`room_${room}`] = (data[unit][room] < 1) ? '' : setIcons({
+                    icon_name: 'user',
+                    quantity: data[unit][room],
+                });
+            }
+        }
+        let card = populateTemplate(template, attributes);
+        $('.floor_info').append(card);
+        $(`#unit_${building}_${unit}`).fadeIn();
+    }
+}
+
+/* ******************* template related functions ******************* */
+
+// pulls the html from the template container
+function getTemplate(template_id) {
+    return $(`#${template_id}`).html()
+}
+
+// iterates through the data and inserts it into the template
+function populateTemplate(template, data) {
+    for (let key in data) {
+        let regex = new RegExp('{{' + key + '}}', 'g');
+        template = template.replace(regex, data[key]);
+    }
+    return template;
+}
+
+/* ******************* other functions ******************* */
+
+// AJAX handler
+function getData(data, callback) {
+    return $.ajax({
+        method: "POST",
+        url: "ajax/",
+        data: data,
+    }).done(callback);
+}
+
+// populates the dorm room modal with student info or availability info
+function roomModalData(template, data = null) {
+    let icon = setIcons({icon_name: 'user'});
     data['phone'] = formatPhoneNumber(data['phone']);
-    if(data['first_name'] === "Available"){
-        icon = '<i class="fas fa-user-plus fa-fw"></i> '
+    // if there is space available add a different icon
+    if (data['first_name'] === "Available") {
+        icon = setIcons({icon_name: 'user-plus'})
     }
     data['first_name'] = icon + data['first_name'];
-    let item = populate_template(template,data);
+    let item = populateTemplate(template, data);
     $('.occupants_list').append(item)
-
 }
-function set_icons(options){
-let icon = `<i class='fas fa-${options.icon_name}'></i>`
-    if(options.quantity){
+
+// builds fontAwesome icon HTML
+function setIcons(options) {
+    let icon = `<i class='fas fa-${options.icon_name} fa-fw'></i>`;
+    if (options.quantity) {
         icon = icon.repeat(options.quantity);
     }
     return icon;
 }
-function floor_overview_callback(data) {
-    console.log(data)
-    let template = get_template('unit');
-    let building = $('.building_select.active').attr('id').replace('building_','');
-    let attributes = {
-        building_id: building,
-    };
-    for (let unit in data) {
-        attributes['unit'] = unit;
-        attributes['gender_icon'] = set_icons({
-            icon_name: data[unit].gender.toLowerCase()+' fa-2x',
-            quantity: 1,
-        });
-        attributes['gender_class'] = data[unit].gender.toLowerCase();
-        for(let key in data[unit]){
-            if(key !== 'gender'){
-                attributes[`room_${key}`] = (data[unit][key] < 1)? '': set_icons({
-                    icon_name: 'user',
-                    quantity: data[unit][key],
-                });
-            }
-        }
-        let card = populate_template(template,attributes);
-        $('.floor_info').append(card);
-        $(`#unit_${building}_${unit}`).fadeIn();
-    }
-};
-function menu_item_callback(data) {
-    let template = get_template('menu_item');
-    for(let key in data){
-        let menu_item = populate_template(template,data[key]);
-        $('.building_menu').append(menu_item);
-        if (key == 0){
-            default_view(data[key]);
-        }
-    }
-};
-
-$('body').on('click','.floor_select',function() {
-    let floor_number = $(this).text();
-    let building = $('.building_select.active').attr('id').replace('building_','');
-    let container = $('.floor_info');
-    let height =  $('.floor_info').height();
-    if(!$(this).hasClass('active')){
-        $('.floor_select.active').removeClass('active')
-        $(this).addClass('active');
-        $.when(container.css('height',height+'px').children().fadeOut(function () {
-            container.children().detach();
-        })).done(function(){
-                get_floor_info(building,floor_number);
-            container.children().fadeIn();
-
-        })
-    }
-})
-$('#dorm_room_modal').on('show.bs.modal', function (event) {
-    let button = $(event.relatedTarget)
-    let location = button.data('location').split('_');
-    let students = get_occupant_info(location);
-})
-
-// Blatantly took this from Stack Overflow.
+// formats phone number for display
 function formatPhoneNumber(phoneNumberString) {
-    if(phoneNumberString.includes('click')){
-        return phoneNumberString;
+    // returns the add student button if the space is available.
+    if (phoneNumberString.includes('click')) {
+        return '<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#add_student_modal">'
+            + setIcons({icon_name: 'user-plus'})
+            + phoneNumberString
+            + '</button>';
     }
-    var cleaned = ('' + phoneNumberString).replace(/\D/g, '')
-    var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
+    let cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+    // Blatantly took this from Stack Overflow.
+    let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
     if (match) {
-        return '<i class="fas fa-phone fa-fw"></i> '+'(' + match[1] + ') ' + match[2] + '-' + match[3]
+        return setIcons({icon_name: 'phone'}) + '(' + match[1] + ') ' + match[2] + '-' + match[3];
     }
-    return null
+    return null;
 }

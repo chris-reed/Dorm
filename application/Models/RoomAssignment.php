@@ -2,8 +2,8 @@
 
 namespace Models;
 
-use Core\DB;
 use Core\Parents\Model;
+use RuntimeException;
 
 /**
 * Class RoomAssignment
@@ -20,19 +20,19 @@ class RoomAssignment extends Model
     protected $table = 'room_assignments';
 
     /**
-     * Returns the gender requiremment for a given unit.
+     * Returns the gender requirement for a given unit.
      *
      * @param  int $building
      * @param int $unit
      * @return string
-     * @throws Exception
      */
     public function unit_gender($building, $unit) {
-        $sql = "SELECT student_id FROM room_assignments WHERE dormitory_id= :dorm AND unit= :unit";
-        $student_ids =  $this->db->get($sql,[
-            'dorm' => $building,
-            'unit' => $unit,
-        ]);
+        $sql = "SELECT * FROM room_assignments WHERE dormitory_id= $building AND unit= $unit";
+        $student_ids =  $this->db->get($sql);
+        if(isset($student_ids['id'])){
+           $student  = (object) (new Student())->find($student_ids['student_id']);
+           return $student->gender;
+        }
         $students = (new Student())->find($this->pluck('student_id',$student_ids));
         $gender = array_unique($this->pluck('gender',$students));
         if(count($gender) > 1){
@@ -47,12 +47,12 @@ class RoomAssignment extends Model
      * @param int $building
      * @param int $unit
      * @return array
-     * @throws Exception
      */
     public function available_rooms($building,$unit) {
         $available = [];
         for($room = 1;$room <= 4; $room++){
             $students = count(self::occupants($building,$unit,$room));
+
             if($students < 2){
                 $available[] = $room;
             }
@@ -66,7 +66,6 @@ class RoomAssignment extends Model
      * @param int $unit
      * @param int $room
      * @return array
-     * @throws Exception
      */
     public function occupants($building,$unit=null,$room=null){
         $sql = "SELECT student_id FROM room_assignments WHERE dormitory_id=$building ";
@@ -76,7 +75,7 @@ class RoomAssignment extends Model
                 $sql .= "AND room=$room ";
             }
         }
-        $occupants = $this->db->get(trim($sql));
+        $occupants = $this->db->raw($sql);
         if(isset($occupants['student_id'])) {
             $occupants =  [$occupants];
         }

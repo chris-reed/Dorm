@@ -17,7 +17,7 @@ class DB
     /**
     * Class constructor
     *
-    * Attemps to instantiate a PDO connection to the database
+    * Attempts to instantiate a PDO connection to the database
     */
     public function __construct()
     {
@@ -34,18 +34,16 @@ class DB
      * Executes a given SQL string
      * @param string $query
      * @return array
-     * @throws Exception
      */
     public function raw(string $query)
     {
-        return self::get($query);
+        $results = $this->connection->query($query);
+        return  $results->fetchAll();
     }
-
     /**
      * Retrives all data from a given table
      * @param string $table
      * @return array
-     * @throws Exception
      */
     public function getAllFromTable(string $table)
     {
@@ -59,7 +57,6 @@ class DB
      * @param string $table
      * @param mixed $id
      * @return array
-     * @throws Exception
      */
     public function find(string $table, $id)
     {
@@ -76,7 +73,6 @@ class DB
      * @param string $sql
      * @param array|null $attributes
      * @return array
-     * @throws Exception
      */
     public function get(string $sql, array $attributes = null)
     {
@@ -87,7 +83,7 @@ class DB
         }else {
                 $query = $db->query($sql);
         }
-        $results = $query->fetchAll();
+            $results = $query->fetchAll();
             if(count($results) === 1){
                 $results = $results[0];
             }
@@ -103,7 +99,7 @@ class DB
      */
     public function put(string $table, array $attributes = null)
     {
-        //TODO code this mythod
+        //TODO code this method
     }
 
     /**

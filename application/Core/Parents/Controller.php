@@ -23,7 +23,7 @@ class Controller
 
     /**
      * Instance of the Model associated with the child Controller 
-     * @var \Models\
+     * @var mixed
      */
     protected $model;
 

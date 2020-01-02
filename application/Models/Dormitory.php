@@ -19,7 +19,7 @@ class Dormitory extends Model
     protected $table = 'dormitories';
 
     /**
-    * Gets unit and room information for a givel floor in a given building
+    * Gets unit and room information for a given floor in a given building
     *
     * @param int $floor 
     * @param int $dorm
