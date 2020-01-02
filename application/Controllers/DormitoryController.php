@@ -34,7 +34,7 @@ class DormitoryController extends Controller
                            'id' => $units,]
                        ,
                    ];
-                   $results[$dorm->id][$units][] = $available;
+                   $results[$dorm->id][$units]['rooms'][] = $available;
                }
            }
        }
