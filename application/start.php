@@ -1,5 +1,5 @@
 <?php
-
+//Start the application
 use Core\Router;
 require 'config.php';
 require 'autoload.php';
