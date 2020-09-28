@@ -1,6 +1,5 @@
 # Dorm Room Coding Challenge
 
-This is my attempt at the senior developer assesment challenge for [InHosting](https://www.inmotionhosting.com/).
 
 ## Getting Started
 
